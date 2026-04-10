@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: practica
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: practica
+  template:
+    metadata:
+      labels:
+        app: practica
+    spec:
+      containers:
+      - name: practica
+        image: openjdk:21
+        command:
+          - sh
+          - -c
+          - "java -jar /app/practica-0.0.1-SNAPSHOT.jar"
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: jar-volume
+          mountPath: /app
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: jar-volume
+        hostPath:
+          path: C:\Users\rnez\Projects\practica-1\target
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: practica-service
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: practica
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+    nodePort: 30081
+
+
+
+
